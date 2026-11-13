@@ -6,7 +6,7 @@ Repo: https://github.com/Qaliss/ReddyLabResearch
 - `Circuit/` — brightness control (rheostat dimmer, PWM exploration, diode model)
 - `Thermal/` — 1-D MATLAB thermal model, datasheets, COMSOL setup
 
-## Current status — Nov 11, 2026
+## Current status — Nov 12, 2026
 
 **Done**
 - 1-D MATLAB thermal model, self-consistent (validated Nov 6): the FR4 board conduction path is the bottleneck — board path 136.4 °C/W (6× 0.2 mm vias) / 47.8 °C/W (18 vias) vs ~2.8 °C/W available. Required heatsink resistance is negative (−134.05 / −45.03 °C/W), so no heatsink alone fixes it.
@@ -15,9 +15,10 @@ Repo: https://github.com/Qaliss/ReddyLabResearch
 - Diode model: Lambert W current calculation (n = 1.75), with the valid resistor range for a 2–5 mA window.
 - COMSOL Multiphysics 6.4 (lab machine, remote login): transient materials table filled in (density + heat capacity for every stack material).
 - CAD: simplified SolidWorks model of the UV LED built, material properties assigned, uploaded to the repo with the datasheet.
+- COMSOL transient baseline: bare LED alone at max power (11.201 W, h=10 convective flux) — just keeps heating, no heatsink or PCB below it.
 
 **In progress**
-- COMSOL transient run — physics run pending, target Sat Nov 14. Sequence: FR4 with no heatsink first (reproduce the 1-D numbers), then MCPCB math on paper, then COMSOL with the MCPCB stack plus convection.
+- COMSOL transient run — bare-LED baseline done Nov 12 (crosses 125 °C in ~0.3 s, ~715 °C at 5 s). Next: FR4 PCB, then vias, then MCPCB/copper substrate.
 
 **Open questions**
 - PCB size for the next board revision — sets the TIM contact area and the spreading area in the model.
@@ -26,6 +27,14 @@ Repo: https://github.com/Qaliss/ReddyLabResearch
 - Area to use for the board path: the 1-D model uses a 4 mm² footprint area; the datasheet package is 3.5 × 3.5 mm (12.25 mm²). Running the MCPCB chain at both.
 
 ## Log
+
+### Nov 12
+- **Did:** Ran a COMSOL transient study of the bare LED alone at max power (11.201 W), outer faces with convective flux h=10 W/m²K — no heatsink or PCB below it.
+- **Found:** The bare LED at max power just keeps heating up — crosses 125 °C in ~0.3 s, ~715 °C at 5 s and still rising. The heat has nowhere to go without a board or heatsink underneath.
+- **Next:** Add different PCB types (FR4, FR4 with vias, MCPCB/copper substrate) and run time-dependent studies to compare.
+
+![Bare LED temperature at 5 s, max power (11.201 W), convective flux h=10](Thermal/led-alone-3d-temp-5s.png)
+![Bare LED temperature vs time, max power (11.201 W), convective flux h=10](Thermal/led-alone-temp-vs-time.png)
 
 ### Nov 11
 - **Did:** Uploaded the simplified SolidWorks LED CAD model and the datasheet to the repo. Asked about copper-substrate vs aluminum-core MCPCB and the PCB size for the next revision.
