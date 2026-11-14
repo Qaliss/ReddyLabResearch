@@ -6,7 +6,7 @@ Repo: https://github.com/Qaliss/ReddyLabResearch
 - `Circuit/` — brightness control (rheostat dimmer, PWM exploration, diode model)
 - `Thermal/` — 1-D MATLAB thermal model, datasheets, COMSOL setup
 
-## Current status — Nov 13, 2026
+## Current status — Nov 14, 2026
 
 **Done**
 - 1-D MATLAB thermal model, self-consistent (validated Nov 6): the FR4 board conduction path is the bottleneck — board path 136.4 °C/W (6× 0.2 mm vias) / 47.8 °C/W (18 vias) vs ~2.8 °C/W available. Required heatsink resistance is negative (−134.05 / −45.03 °C/W), so no heatsink alone fixes it.
@@ -17,17 +17,30 @@ Repo: https://github.com/Qaliss/ReddyLabResearch
 - CAD: simplified SolidWorks model of the UV LED built, material properties assigned, uploaded to the repo with the datasheet.
 - COMSOL transient baseline: bare LED alone at max power (11.201 W, h=10 convective flux) — just keeps heating, no heatsink or PCB below it.
 - CAD: Onshape models of the LED on a PCB, two versions (with vias and without vias), exported as STLs and uploaded to the repo. Heat transfer setup started in COMSOL with materials matched.
+- COMSOL transient: FR4 PCB (no vias) at max power (11.201 W, h=10) — crosses 125 °C in ~0.5 s, die ~550 °C at 5 s (~730 °C at 10 s), still rising. CAD fixed flush first so the thin layer would work.
+- COMSOL transient: FR4 PCB with vias (18 copper-filled vias, 0.3 mm diameter, 3×6 array under the thermal pad, board 10×10 mm) — crosses 125 °C in ~0.5 s, die ~360 °C at 5 s (~455 °C at 10 s). Vias help (~200–275 K cooler at 5–10 s) but still not enough.
 
 **In progress**
-- COMSOL transient run — bare-LED baseline done Nov 12 (crosses 125 °C in ~0.3 s, ~715 °C at 5 s). FR4 PCB CAD done Nov 13 (with and without vias); heat transfer setup started but the study won't complete until the CAD gap is fixed so the parts are flush — fixing tomorrow, then thin layers. Next after that: vias, then MCPCB/copper substrate.
+- Copper-substrate PCB model next (strongly recommended for this LED series). MCPCB math on paper, then COMSOL with the copper-substrate stack + convection. Joshua's Teams project doc received Nov 13 (optical feedback, electrical side); PCB size and Tj still open.
 
 **Open questions**
 - PCB size for the next board revision — sets the TIM contact area and the spreading area in the model.
 - Acceptable steady-state junction temperature — being looked into.
-- Copper-substrate vs aluminum-core MCPCB — copper-substrate boards are apparently strongly recommended for this LED series; comparing the two for our case.
+- Copper-substrate vs aluminum-core MCPCB — copper-substrate is strongly recommended for this LED series; modeling the copper-substrate stack next.
 - Area to use for the board path: the 1-D model uses a 4 mm² footprint area; the datasheet package is 3.5 × 3.5 mm (12.25 mm²). Running the MCPCB chain at both.
 
 ## Log
+
+### Nov 14
+- **Did:** Fixed the CAD so the parts are flush — the thin layer setup needed that. Converted the via fills from STL to STEP so COMSOL could import them as separate parts. Ran the FR4 transient (no vias), then the FR4 + vias transient: 18 vias, 0.3 mm diameter, 3×6 array under the central thermal pad, copper-filled. Board 10×10 mm. Same case as before (11.201 W, h=10).
+- **Found:** FR4 with no vias: crosses 125 °C in ~0.5 s, die ~550 °C at 5 s (~730 °C at 10 s). With vias: crosses 125 °C in ~0.5 s, die ~360 °C at 5 s (~455 °C at 10 s). The vias do help — about 200–275 K cooler at 5–10 s, and the bottom of the board shows the heat spreading out through the vias — but it's still not enough, still way past 125 °C and still rising.
+- **Next:** Copper-substrate PCB model.
+
+![FR4 PCB temperature at 10 s, max power (11.201 W), convective flux h=10](Thermal/fr4-3d-temp-10s.png)
+![FR4 PCB temperature vs time, max power (11.201 W), convective flux h=10](Thermal/fr4-temp-vs-time.png)
+![FR4 PCB with vias, temperature at 10 s (top), max power (11.201 W), convective flux h=10](Thermal/fr4-vias-3d-temp-10s-top.png)
+![FR4 PCB with vias, temperature at 10 s (bottom), max power (11.201 W), convective flux h=10](Thermal/fr4-vias-3d-temp-10s-bottom.png)
+![FR4 PCB with vias, temperature vs time, max power (11.201 W), convective flux h=10](Thermal/fr4-vias-temp-vs-time.png)
 
 ### Nov 13
 - **Did:** Modeled the PCB in Onshape, two versions — with vias and without vias — and exported both as STLs. Started the heat transfer setup in COMSOL: matched the materials and got that set up.
